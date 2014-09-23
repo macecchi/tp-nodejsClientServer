@@ -41,7 +41,13 @@ var svr = net.createServer(function(sock) {
             delete sockets[idx];
         }
     });
+	sock.on('error', function(err) {
+		sys.puts('ECONNRESET?\n' + err.stack);
+	});
 });
  
 var svraddr = '74.207.235.213';
 var svrport = 8080;
+
+svr.listen(svrport, svraddr);
+sys.puts('Server Created at ' + svraddr + ':' + svrport + '\n');
