@@ -30,7 +30,7 @@ var svr = net.createServer(function(sock) { // callback executado a cada criacao
  
     sock.on('end', function(data) { // cliente disconecta
 		try {
-			sys.puts('Disconectou-se: ' + data + data.remoteAddress + ':' + data.remotePort + '\n');
+			sys.puts('Desconectou-se: ' + data + data.remoteAddress + ':' + data.remotePort + '\n');
 		} catch(err) {
 			sys.puts('Uma conexao foi abortada\n');
 		}
