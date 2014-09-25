@@ -30,7 +30,7 @@ var svr = net.createServer(function(sock) {
         }
     });
  
-    sock.on('end', function() { // client disconnects
+    sock.on('end', function(data) { // client disconnects
 		try {
 			sys.puts('Disconnected: ' + data + data.remoteAddress + ':' + data.remotePort + '\n');
 		} catch(err) {
@@ -43,6 +43,7 @@ var svr = net.createServer(function(sock) {
     });
 	sock.on('error', function(err) {
 		sys.puts('ECONNRESET?\n' + err.stack);
+		console.log(err);
 	});
 });
  
