@@ -12,28 +12,27 @@ process.argv.forEach(function (val, index, array) {
   }
 });
 
-var socket = net.createConnection(port, host);
-console.log('Welcome to an awesome chat!');
-console.log('Type "EXIT" to quit');
+var socket = net.createConnection(port, host); // cria o socket, instancia o listener
+console.log('Bem-vindo!');
+console.log('Digite EXIT para encerrar o chat');
 
-// Log the response from the HTTP server.
-socket.on('data', function(data) { 
-  sys.puts(data);
-}).on('connect', function() {
-  var stdin = process.openStdin();
-	stdin.addListener("data", function(data) {
-		// note:  data is an object, and when converted to a string it will
-		// end with a linefeed.  so we (rather crudely) account for that  
-		// with toString() and then substring() 
-		if(socket.writable) {
-			socket.write(data.toString().substring(0, data.length - 1));
-		} else {
-			console.log("Socket died :(");
+socket.on('data', function(data) { // Escuta o stream de dados que vem do servidor
+	sys.puts(data); // se chegou algo do servidor, escreve na tela
+}).on('connect', function() { // assim que recebe o evento de 'conectado', abre um console para o usuário
+	var stdin = process.openStdin(); // abre console
+	stdin.addListener("data", function(data) { // listener para tratamento do que foi digitado no console
+		// data é um objeto "puro" javascript que precisa ser convertido pra string antes de usar
+		// além disso é preciso remover o line feed do final (por isso o substring)		
+		if(socket.writable) { // se o socket ainda estiver ativo, escreva nele o que foi digitado
+			socket.write(data.toString().substring(0, data.length - 1)); // escrevendo
+		} else { // se o socket estiver fechado indevidamente (abortado, falha na rede, etc), avisar e sair do programa
+			console.log("O socket morreu :(");
+			process.exit(2);
 		}
 	});
-}).on('end', function() {
-  console.log('Closing...');
-  process.exit(1);
+}).on('end', function() { // se o comando de finalização do socket for executado, escutar pelo evento de fechamento normal do socket originado do servidor
+	console.log('Adeus...');
+	process.exit(1);
 });
 
 
