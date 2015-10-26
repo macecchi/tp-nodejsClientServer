@@ -25,8 +25,6 @@ socket.on('connect', function() { // assim que recebe o evento de 'conectado', a
 		// além disso é preciso remover o line feed do final (por isso o substring)		
 		if(socket.writable) { // se o socket ainda estiver ativo, escreva nele o que foi digitado
 			var outMessage = data.toString().substring(0, data.length - 1);
-			//console.log('[DEBUG] Enviando para o server: ' + );
-			console.log("\r");
 			socket.write(data.toString().substring(0, data.length - 1)); // escrevendo
 		} else { // se o socket estiver fechado indevidamente (abortado, falha na rede, etc), avisar e sair do programa
 			console.log("O socket morreu :(");

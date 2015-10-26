@@ -3,7 +3,7 @@ var net = require('net');
 
 var sockets = [];
 var clientNames = {};
-var defaultNames = ['Adriano', 'Adriana', 'Carla', 'João Carlos', 'Claudson', 'Paulo', 'Flávia', 'Silvana', 'Maria Luiza', 'Marcos', 'Jonathan', 'Daniel', 'Aguiar'];
+var defaultNames = ['Adriano', 'Adriana', 'Carla', 'João', 'Claudson', 'Paulo', 'Flávia', 'Silvana', 'Maria', 'Marcos', 'Jonathan', 'Daniel', 'Aguiar'];
 
 function getClientName(sock) {
 	return clientNames[sock.remoteAddress + ':' + sock.remotePort];
@@ -23,14 +23,23 @@ function deleteClientName(sock) {
 	delete clientNames[sock.remoteAddress + ':' + sock.remotePort];
 }
 
-function broadcast(sock, message) {
-    for (var i = 0; i < sockets.length; i++) { // broadcast da mensagem recebida, envia para todos os clientes (sockets conhecidos)
-        //if (sockets[i] != sock) {
+function broadcast(sender, message) {
+    for (var i in sockets) { // broadcast da mensagem recebida, envia para todos os clientes (sockets conhecidos)
+        //if (sockets[i] != sender) {
             if (sockets[i]) {
                 sockets[i].write(message + "\n");
             }
         //}
     }
+}
+
+function directMessage(sender, recipient, message) {
+	for (var i in sockets) {
+		if (getClientName(sockets[i]) == recipient) {
+			sockets[i].write(message + "\n");
+			break;
+		}
+	}
 }
  
 var svr = net.createServer(function(sock) { // callback executado a cada criacao de socket, apos o ACK
@@ -66,6 +75,14 @@ var svr = net.createServer(function(sock) { // callback executado a cada criacao
 	            broadcast(sock, nameUpdateMessage);
 	        	return;
 	        }
+    	}
+
+    	// Verificar se a mensagem é uma mensagem direta
+    	if (receivedMessage.charAt(0) == '@') {
+    		var recipient = receivedMessage.substring(1, receivedMessage.length).split(' ');
+
+    		directMessage(sock, recipient[0], '[PRIVADO] ' + getClientName(sock) + ' diz:\n  ' +recipient.slice(1).join(' '));
+    		return;
     	}
 
         broadcast(sock, getClientName(sock) + ' diz:\n  ' + receivedMessage);
