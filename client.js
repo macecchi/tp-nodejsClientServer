@@ -13,8 +13,6 @@ process.argv.forEach(function (val, index, array) {
 });
 
 var socket = net.createConnection(port, host); // cria o socket, instancia o listener
-console.log('Bem-vindo!');
-console.log('Digite EXIT para encerrar o chat');
 
 socket.on('data', function(data) { // Escuta o stream de dados que vem do servidor
 	console.log(data.toString()); // se chegou algo do servidor, escreve na tela
@@ -28,6 +26,7 @@ socket.on('connect', function() { // assim que recebe o evento de 'conectado', a
 		if(socket.writable) { // se o socket ainda estiver ativo, escreva nele o que foi digitado
 			var outMessage = data.toString().substring(0, data.length - 1);
 			//console.log('[DEBUG] Enviando para o server: ' + );
+			console.log("\r");
 			socket.write(data.toString().substring(0, data.length - 1)); // escrevendo
 		} else { // se o socket estiver fechado indevidamente (abortado, falha na rede, etc), avisar e sair do programa
 			console.log("O socket morreu :(");
