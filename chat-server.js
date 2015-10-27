@@ -4,44 +4,10 @@ var net = require('net');
 var sockets = [];
 var clientNames = {};
 var defaultNames = ['Adriano', 'Adriana', 'Carla', 'João', 'Claudson', 'Paulo', 'Flávia', 'Silvana', 'Maria', 'Marcos', 'Jonathan', 'Daniel', 'Aguiar'];
-
-function getClientName(sock) {
-	return clientNames[sock.remoteAddress + ':' + sock.remotePort];
-}
-
-function setClientName(sock, name) {
-	if (!name) {
-		var randPos = Math.floor(Math.random() * defaultNames.length);
-		name = defaultNames[randPos];
-		delete defaultNames[randPos];
-	}
-    
-    clientNames[sock.remoteAddress + ':' + sock.remotePort] = name;
-}
-
-function deleteClientName(sock) {
-	delete clientNames[sock.remoteAddress + ':' + sock.remotePort];
-}
-
-function broadcast(sender, message) {
-    for (var i in sockets) { // broadcast da mensagem recebida, envia para todos os clientes (sockets conhecidos)
-        //if (sockets[i] != sender) {
-            if (sockets[i]) {
-                sockets[i].write(message + "\n");
-            }
-        //}
-    }
-}
-
-function directMessage(sender, recipient, message) {
-	for (var i in sockets) {
-		if (getClientName(sockets[i]) == recipient) {
-			sockets[i].write(message + "\n");
-			break;
-		}
-	}
-}
  
+var svraddr = '0.0.0.0'; // endereco do servidor, ex.: localhost, 127.0.0.1, 74.207.235.213
+var svrport = 8080; // porta para o ACK
+
 var svr = net.createServer(function(sock) { // callback executado a cada criacao de socket, apos o ACK
     sockets.push(sock); // adiciona na lista de sockets
     setClientName(sock);
@@ -59,6 +25,7 @@ var svr = net.createServer(function(sock) { // callback executado a cada criacao
 
 	        if (command[0] == 'exit') { // comando de finalizacao do cliente, fecha o socket
 	            console.log('Comando /exit recebido de ' + sock.remoteAddress + ':' + sock.remotePort + '\n');
+	            broadcast(sock, 'O cliente ' + getClientName(sock) + " desconectou-se.");
 	            sock.destroy();
 	            var idx = sockets.indexOf(sock);
 	            if (idx != -1) {
@@ -106,9 +73,58 @@ var svr = net.createServer(function(sock) { // callback executado a cada criacao
 		console.log(err);
 	});
 });
- 
-var svraddr = '0.0.0.0'; // endereco do servidor, ex.: localhost, 127.0.0.1, 74.207.235.213
-var svrport = 8080; // porta para o ACK
+
+/**
+ * Retorna o nome do cliente a partir do seu socket.
+ */
+function getClientName(sock) {
+	return clientNames[sock.remoteAddress + ':' + sock.remotePort];
+}
+
+/**
+ * 
+ */
+function setClientName(sock, name) {
+	if (!name) {
+		var randPos = Math.floor(Math.random() * defaultNames.length);
+		name = defaultNames[randPos];
+		delete defaultNames[randPos];
+	}
+    
+    clientNames[sock.remoteAddress + ':' + sock.remotePort] = name;
+}
+
+/**
+ * 
+ */
+function deleteClientName(sock) {
+	delete clientNames[sock.remoteAddress + ':' + sock.remotePort];
+}
+
+/**
+ * 
+ */
+function broadcast(sender, message) {
+    for (var i in sockets) { // broadcast da mensagem recebida, envia para todos os clientes (sockets conhecidos)
+        //if (sockets[i] != sender) {
+            if (sockets[i]) {
+                sockets[i].write(message + "\n");
+            }
+        //}
+    }
+}
+
+/**
+ * 
+ */
+function directMessage(sender, recipient, message) {
+	for (var i in sockets) {
+		if (getClientName(sockets[i]) == recipient) {
+			sockets[i].write(message + "\n");
+			break;
+		}
+	}
+}
 
 svr.listen(svrport, svraddr); // inicializa a porta de escuta
 console.log('Servidor criado em ' + svraddr + ':' + svrport + '\n'); // debug
