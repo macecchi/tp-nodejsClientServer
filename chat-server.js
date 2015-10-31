@@ -8,6 +8,9 @@ var defaultNames = ['Adriano', 'Adriana', 'Carla', 'João', 'Claudson', 'Paulo',
 var svraddr = '0.0.0.0'; // endereco do servidor, ex.: localhost, 127.0.0.1, 74.207.235.213
 var svrport = 8080; // porta para o ACK
 
+/**
+ * Cria o servidor e configura todos os callbacks dos clientes necessários para seu uso
+ */
 var svr = net.createServer(function(sock) { // callback executado a cada criacao de socket, apos o ACK
     sockets.push(sock); // adiciona na lista de sockets
     setClientName(sock);
@@ -82,7 +85,7 @@ function getClientName(sock) {
 }
 
 /**
- * 
+ * Modifica o nome do cliente a partir do seu socket
  */
 function setClientName(sock, name) {
 	if (!name) {
@@ -95,14 +98,14 @@ function setClientName(sock, name) {
 }
 
 /**
- * 
+ * Deleta o nome do cliente da lista de nomes a partir de seu socket
  */
 function deleteClientName(sock) {
 	delete clientNames[sock.remoteAddress + ':' + sock.remotePort];
 }
 
 /**
- * 
+ * Manda uma mensagem para todos os sockets conhecidos
  */
 function broadcast(sender, message) {
     for (var i in sockets) { // broadcast da mensagem recebida, envia para todos os clientes (sockets conhecidos)
@@ -115,7 +118,7 @@ function broadcast(sender, message) {
 }
 
 /**
- * 
+ * Manda uma mensagem para um socket específico
  */
 function directMessage(sender, recipient, message) {
 	for (var i in sockets) {
