@@ -16,6 +16,6 @@ Caso o servidor e cliente estejam executando na mesma máquina, pode-se usar "lo
 ## Funcionalidades
 * Mensagem para a sala
 * Mensagem privada (@NomeDoUsuario mensagem)
-* Nome personalizado
-* Nome automático: um nome será automaticamente selecionado quando o cliente entrar na sala.
+* Nome personalizado (/name NovoNome)
+* Nome automático: um nome será automaticamente selecionado quando o cliente entrar na sala a partir de um set pré-definido
 * Avisos para a sala quando um cliente conecta, desconecta ou muda seu nome
